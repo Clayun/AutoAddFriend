@@ -1,21 +1,27 @@
 package com.clayun.auto;
 
+import com.clayun.auto.image.Coordinate;
+import com.clayun.auto.image.ImageApplication;
+
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Application {
 
-    public static void main(String[] args) throws AWTException {
+    public static void main(String[] args) throws AWTException, IOException {
 
-        add("2-4","D:\\Documents\\Tencent Files\\1627072456\\FileRecv\\2-4.xlsx");
+//        add("2-4","D:\\Documents\\Tencent Files\\1627072456\\FileRecv\\2-4.xlsx");
+
+        operate("15810330527","哈哈哈");
 
     }
 
-    private static void add(String num,String path) throws AWTException {
+    private static void add(String num,String path) throws AWTException, IOException {
 
 
 
@@ -28,59 +34,156 @@ public class Application {
             System.out.println("开始添加："+mobile+"  "+beizhu);
             operate(mobile,beizhu);
         }
-
-
-
     }
 
-    private static void operate(String mobile,String beizhu) throws AWTException {
+    private static boolean clickButtonByImage(Robot robot,String path,int times) throws IOException, AWTException {
+        Coordinate position = ImageApplication.getPosition(path);
+        if(position != null){
+            for(int i = 0 ;i <= times; i++){
+                clickMouse(robot, position.getX(), position.getY(), 300);
+            }
+
+            System.out.println("点击 "+path+" 成功");
+            return true;
+        }
+        System.out.println("点击 "+path+" 失败");
+        return false;
+    }
+
+    private static boolean clickButtonByImageFinalPixel(Robot robot,String path,int times) throws IOException, AWTException {
+        Coordinate position = ImageApplication.getFinalPosition(path);
+        if(position != null){
+            for(int i = 0 ;i < times; i++){
+                clickMouse(robot, position.getX(), position.getY(), 300);
+            }
+
+            System.out.println("点击 "+path+" 成功");
+            return true;
+        }
+
+        System.out.println("点击 "+path+" 失败");
+        return false;
+    }
+
+    private static void operate(String mobile,String beizhu) throws AWTException, IOException {
         Robot robot = new Robot();
 
         //尝试回到首页
-        clickMouse(robot, 1505, 99, 300);
-        clickMouse(robot, 1505, 99, 300);
-        clickMouse(robot, 1505, 99, 300);
+//        clickButtonByImage(robot, "return.png", 3);
 
         //点击加号
-        clickMouse(robot, 1888, 96, 300);
-        //添加好友
-        clickMouse(robot, 1822, 221, 300);
+        boolean b2 = clickButtonByImage(robot, "add_button.png", 1);
+
+        if(!b2){
+            return;
+        }
+
+        //添加朋友按钮
+        boolean b3 = clickButtonByImage(robot, "add_friend_button.png", 1);
+        if(!b3){
+            return;
+        }
+
         //打开输入框
-        clickMouse(robot, 1719, 146, 350);
+        boolean b4 = clickButtonByImage(robot, "add_friend_textarea.png", 1);
+        if(!b4){
+            return;
+        }
 
 //        setAndctrlVClipboardData2(mobile);
+        //输入手机号
         pressNum(robot,mobile,500);
 
         //搜索
-        clickMouse(robot, 1704, 161, 300);
+        boolean b = clickButtonByImage(robot, "search_mobile.png", 1);
+
+        if(!b){
+            System.out.println("未找到该用户");
+            return;
+        }
 
         //发起邀请
-        clickMouse(robot, 1711, 360, 300);
-        clickMouse(robot, 1691, 414, 300);
-        clickMouse(robot, 1712, 474, 300);
-        clickMouse(robot, 1712, 536, 300);
+        boolean add_contact = clickButtonByImage(robot, "add_contact_button.png", 1);
+
+        if(!add_contact){
+            System.out.println("该用户已添加过，无需重复");
+            return;
+        }
 
         //点击设置备注
-        clickMouse(robot, 1685, 454, 500);
-        clickMouse(robot, 1685, 454, 500);
+        boolean b1 = clickButtonByImageFinalPixel(robot, "set_remark.png", 3);
+        if(b1){
+            //正常设置
+        }else{
+            System.out.println("未找到备注位置");
+            return;
+        }
 
         //全部删除
         clearAll(robot);
 
         setAndctrlVClipboardData2(beizhu);
 
-        clickMouse(robot, 1866, 98, 300);
+        //发送请求
+        clickButtonByImage(robot, "send_button.png", 1);
 
         //回到主页
-        clickMouse(robot, 1505, 99, 300);
-        clickMouse(robot, 1505, 99, 300);
-        clickMouse(robot, 1505, 99, 300);
-        clickMouse(robot, 1505, 99, 300);
-        clickMouse(robot, 1505, 99, 300);
+        clickButtonByImage(robot,"return.png",3);
 
     }
 
     private static void clearAll(Robot robot){
+
+        robot.keyPress(KeyEvent.VK_DELETE);
+        robot.keyRelease(KeyEvent.VK_DELETE);
+        robot.keyPress(KeyEvent.VK_DELETE);
+        robot.keyRelease(KeyEvent.VK_DELETE);
+        robot.keyPress(KeyEvent.VK_DELETE);
+        robot.keyRelease(KeyEvent.VK_DELETE);
+        robot.keyPress(KeyEvent.VK_DELETE);
+        robot.keyRelease(KeyEvent.VK_DELETE);
+        robot.keyPress(KeyEvent.VK_DELETE);
+        robot.keyRelease(KeyEvent.VK_DELETE);
+        robot.keyPress(KeyEvent.VK_DELETE);
+        robot.keyRelease(KeyEvent.VK_DELETE);
+        robot.keyPress(KeyEvent.VK_DELETE);
+        robot.keyRelease(KeyEvent.VK_DELETE);
+        robot.keyPress(KeyEvent.VK_DELETE);
+        robot.keyRelease(KeyEvent.VK_DELETE);
+        robot.keyPress(KeyEvent.VK_DELETE);
+        robot.keyRelease(KeyEvent.VK_DELETE);
+        robot.keyPress(KeyEvent.VK_DELETE);
+        robot.keyRelease(KeyEvent.VK_DELETE);
+        robot.keyPress(KeyEvent.VK_DELETE);
+        robot.keyRelease(KeyEvent.VK_DELETE);
+        robot.keyPress(KeyEvent.VK_DELETE);
+        robot.keyRelease(KeyEvent.VK_DELETE);
+        robot.keyPress(KeyEvent.VK_DELETE);
+        robot.keyRelease(KeyEvent.VK_DELETE);
+        robot.keyPress(KeyEvent.VK_DELETE);
+        robot.keyRelease(KeyEvent.VK_DELETE);
+        robot.keyPress(KeyEvent.VK_DELETE);
+        robot.keyRelease(KeyEvent.VK_DELETE);
+        robot.keyPress(KeyEvent.VK_DELETE);
+        robot.keyRelease(KeyEvent.VK_DELETE);
+        robot.keyPress(KeyEvent.VK_DELETE);
+        robot.keyRelease(KeyEvent.VK_DELETE);
+        robot.keyPress(KeyEvent.VK_DELETE);
+        robot.keyRelease(KeyEvent.VK_DELETE);
+        robot.keyPress(KeyEvent.VK_DELETE);
+        robot.keyRelease(KeyEvent.VK_DELETE);
+        robot.keyPress(KeyEvent.VK_DELETE);
+        robot.keyRelease(KeyEvent.VK_DELETE);
+        robot.keyPress(KeyEvent.VK_DELETE);
+        robot.keyRelease(KeyEvent.VK_DELETE);
+        robot.keyPress(KeyEvent.VK_DELETE);
+        robot.keyRelease(KeyEvent.VK_DELETE);
+        robot.keyPress(KeyEvent.VK_DELETE);
+        robot.keyRelease(KeyEvent.VK_DELETE);
+        robot.keyPress(KeyEvent.VK_DELETE);
+        robot.keyRelease(KeyEvent.VK_DELETE);
+
+
         robot.keyPress(KeyEvent.VK_BACK_SPACE);
         robot.keyRelease(KeyEvent.VK_BACK_SPACE);
         robot.keyPress(KeyEvent.VK_BACK_SPACE);
